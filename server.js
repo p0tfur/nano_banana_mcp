@@ -67,6 +67,42 @@ function extensionForMime(mime) {
   }
 }
 
+function normalizeImageSize(imageSize) {
+  if (!imageSize) return undefined;
+
+  const raw = String(imageSize).trim();
+  if (!raw) return undefined;
+
+  const upper = raw.toUpperCase();
+  if (upper === "1K" || upper === "2K" || upper === "4K") return upper;
+
+  const dimsMatch = /^([0-9]{2,5})\s*[Xx]\s*([0-9]{2,5})$/.exec(raw);
+  if (dimsMatch) {
+    const w = Number(dimsMatch[1]);
+    const h = Number(dimsMatch[2]);
+    const maxSide = Math.max(w, h);
+    if (maxSide <= 1024) return "1K";
+    if (maxSide <= 2048) return "2K";
+    if (maxSide <= 4096) return "4K";
+    throw new Error(
+      `Unsupported image_size '${raw}'. Max side ${maxSide}px is too large. Use 1K, 2K, 4K (or e.g. 1024x1024).`
+    );
+  }
+
+  const numMatch = /^([0-9]{2,5})$/.exec(raw);
+  if (numMatch) {
+    const px = Number(numMatch[1]);
+    if (px <= 1024) return "1K";
+    if (px <= 2048) return "2K";
+    if (px <= 4096) return "4K";
+    throw new Error(`Unsupported image_size '${raw}'. Value ${px}px is too large. Use 1K, 2K, 4K (or e.g. 1024x1024).`);
+  }
+
+  throw new Error(
+    `Invalid image_size '${raw}'. Supported: 1K | 2K | 4K (also accepts 1024x1024 / 2048x2048 / 4096x4096).`
+  );
+}
+
 async function generateWithOpenRouter({ prompt, model, apiKey, imageSize, extraHeaders }) {
   const url = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -76,8 +112,9 @@ async function generateWithOpenRouter({ prompt, model, apiKey, imageSize, extraH
     messages: [{ role: "user", content: prompt }],
   };
 
-  if (imageSize) {
-    body.image_config = { image_size: imageSize };
+  const normalizedImageSize = normalizeImageSize(imageSize);
+  if (normalizedImageSize) {
+    body.image_config = { image_size: normalizedImageSize };
   }
 
   const headers = {
