@@ -1,0 +1,11 @@
+{
+  "name": "nano-banana-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local MCP server for Windsurf Cascade to generate images via OpenRouter (google/gemini-3-pro-image-preview) and save into public/images.",
+  "type": "commonjs",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,15 @@
+{
+    "mcpServers": {
+        "nano-banana": {
+            "command": "node",
+            "args": [
+                "c:/Users/<YOU>/.codeium/windsurf/mcp/nano-banana/server.js"
+            ],
+            "env": {
+                "OPENROUTER_API_KEY": "${env:OPENROUTER_API_KEY}",
+                "OPENROUTER_HTTP_REFERER": "${env:OPENROUTER_HTTP_REFERER}",
+                "OPENROUTER_X_TITLE": "${env:OPENROUTER_X_TITLE}"
+            }
+        }
+    }
+}
